@@ -1,0 +1,25 @@
+count := 1
+forever := make(chan bool)
+
+go func(count int) {
+	for d := range msgs {
+		count++
+		fmt.Println("Count", count)
+		if count == 3 {
+			close(forever)
+			break
+		}
+		fmt.Printf("Received a message %s\n", d.Body)
+	}
+}(count)
+
+fmt.Printf("waiting for messages\n")
+
+select {
+case <-forever:
+	fmt.Println("channel was closed")
+default:
+	fmt.Println("Channel was not closed")
+}
+// yes := <-forever
+<-forever
